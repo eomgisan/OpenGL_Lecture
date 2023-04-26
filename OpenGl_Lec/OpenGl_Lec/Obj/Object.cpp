@@ -20,27 +20,30 @@ Object::Object(const char* vsPath, const char* fsPath, const char* objPath)
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), vertices.data(), GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
 	glEnableVertexAttribArray(0);
-
-	glGenBuffers(1, &NBO);
-	glBindBuffer(GL_ARRAY_BUFFER, NBO);
-	glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(glm::vec3), normals.data(), GL_STATIC_DRAW);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
-	glEnableVertexAttribArray(1);
-
+	
 	glGenBuffers(1, &TBO);
 	glBindBuffer(GL_ARRAY_BUFFER, TBO);
 	glBufferData(GL_ARRAY_BUFFER, texCoords.size() * sizeof(glm::vec2), texCoords.data(), GL_STATIC_DRAW);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
+	glEnableVertexAttribArray(1);
+	
+	glGenBuffers(1, &NBO);
+	glBindBuffer(GL_ARRAY_BUFFER, NBO);
+	glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(glm::vec3), normals.data(), GL_STATIC_DRAW);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
 	glEnableVertexAttribArray(2);
+
+
 
 	glGenBuffers(1, &IBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, vertex_idx.size() * sizeof(unsigned int), vertex_idx.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, idx.size() * sizeof(unsigned short), idx.data(), GL_STATIC_DRAW);
 
 	glBindVertexArray(0);
 }
 
 Object::~Object(){}
+
 
 void Object::SetColorBuffer(const vector<GLfloat> &g_color_buffer_data)
 {
@@ -97,9 +100,17 @@ bool Object::loadOBJ(const char* path) {
 				return false;
 			}
 
-			vertex_idx.push_back(vertexIndex[0]-1);
-			vertex_idx.push_back(vertexIndex[1]-1);
-			vertex_idx.push_back(vertexIndex[2]-1);
+			idx.push_back(vertexIndex[0] - 1);
+			idx.push_back(vertexIndex[1] - 1);
+			idx.push_back(vertexIndex[2] - 1);
+
+			idx.push_back(uvIndex[0] - 1);
+			idx.push_back(uvIndex[1] - 1);
+			idx.push_back(uvIndex[2] - 1);
+
+			idx.push_back(normalIndex[0] - 1);
+			idx.push_back(normalIndex[1] - 1);
+			idx.push_back(normalIndex[2] - 1);
 
 		}
 	}
@@ -111,26 +122,24 @@ bool Object::loadOBJ(const char* path) {
 
 
 
-
-
-
-
-
-
 void Object::draw(glm::mat4 View, glm::mat4 Proj) {
 	
 	glUseProgram(shader);
 
-
-
 	glUniformMatrix4fv(WorldMatrixID, 1, GL_FALSE, glm::value_ptr(World));
 	glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, glm::value_ptr(View));
 	glUniformMatrix4fv(ProjectionMatrixID, 1, GL_FALSE, glm::value_ptr(Proj));
+	
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, textureID);
+	GLint location = glGetUniformLocation(shader, "Tex");
+	glUniform1i(location, 0);
+	
 
 	glBindVertexArray(VAO);
 
-	glDrawElements(GL_TRIANGLES, vertex_idx.size(), GL_UNSIGNED_SHORT, nullptr);
-
+	glDrawElements(GL_TRIANGLES, idx.size(), GL_UNSIGNED_SHORT, nullptr);
+	
 	glBindVertexArray(0);
 	glUseProgram(0);
 }

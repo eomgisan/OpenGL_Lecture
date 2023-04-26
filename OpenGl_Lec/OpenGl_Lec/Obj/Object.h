@@ -3,7 +3,7 @@ class Object
 {
 private:
 	GLuint VAO, VBO, NBO, TBO, IBO, CBO;
-
+    GLuint textureID;
 private:
     GLuint shader;
 
@@ -18,13 +18,13 @@ private:
 // 라이팅용
 
 private:
-
+  
 	vector<glm::vec3> vertices;
-	vector<glm::vec3> normals;
 	vector<glm::vec2> texCoords;
-	
+    vector<glm::vec3> normals;
 
-    vector<unsigned short> vertex_idx;
+    vector<unsigned short> idx;
+
 
 
 private:
@@ -37,7 +37,13 @@ public:
 
 public:
     void SetWorld(const glm::mat4& _world) { World = _world; }
+
+
     void SetColorBuffer(const vector<GLfloat> &g_color_buffer_data);
+    void SetTexID(const GLuint& texId) { textureID = texId; }
+
+    GLuint loadBMP_custom(const char * imagepath);
+
     void draw(glm::mat4 View, glm::mat4 Proj);
 };
 

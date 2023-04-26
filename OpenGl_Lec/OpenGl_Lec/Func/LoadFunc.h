@@ -7,3 +7,5 @@ void CreateShaderProgramFromFiles(const char* vsPath, const char* fsPath, GLuint
 void CompileShader(const char* vsCode, const char* fsCode, GLuint& shader);
 GLuint AddShader(const char* shaderCode, GLenum shaderType);
 
+
+// GLuint loadBMP_custom(const char* imagepath);

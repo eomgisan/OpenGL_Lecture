@@ -1,5 +1,8 @@
+#define STB_IMAGE_IMPLEMENTATION
+
 #include "pch.h"
 
+#include "Func/LoadFunc.h"
 #include "Obj/object.h"
 #include "Obj/Camera.h"
 
@@ -43,6 +46,7 @@ static const vector<GLfloat> g_color_buffer_data = {
 };
 
 
+
 int main(void)
 {
 	if (!glfwInit())
@@ -79,34 +83,60 @@ int main(void)
 
 
 
-
-
-	// 프로젝션 매트릭스 : 45도 시야각, 4:3 비율, 시야 범위 : 0.1 유닛 <--> 100 유닛
-	glm::mat4 Projection = glm::perspective(glm::radians(45.0f), (float)framebuf_width / (float)framebuf_height, 0.1f, 100.0f);
-
-	// 카메라 매트릭스
-	glm::mat4 View = glm::lookAt(
-		glm::vec3(4, 3, 3), // 카메라는 (4,3,3) 에 있다. 월드 좌표에서
-		glm::vec3(0, 0, 0), // 그리고 카메라가 원점을 본다
-		glm::vec3(0, 1, 0)  // 머리가 위쪽이다 (0,-1,0 으로 해보면, 뒤집어 볼것이다)
-	);
-
-
-
+	
 	//==========
 	// 씬 만들기
 	//==========
 	vector<Object> objs;
 
-	objs.push_back(Object("Shader/VS.vert", "Shader/FS.frag", "Obj/cube.obj"));
+	objs.push_back(Object("Shader/VS.vert", "Shader/FS.frag", "Obj/character.obj"));
 
 	glm::mat4 World = glm::mat4(1.0f);
+
+
 	objs[0].SetWorld(World);
+
+
 	objs[0].SetColorBuffer(g_color_buffer_data);
+
+	
+	
+	int imgWidth, imgHeight, imgChannels;
+	GLuint textureID;
+
+	// OpenGL Texture를 생성합니다. 
+	
+	glGenTextures(1, &textureID);
+
+	// 새 텍스처에 "Bind" 합니다 : 이제 모든 텍스처 함수들은 이 텍스처를 수정합니다. 
+	// "Bind" the newly created texture : all future texture functions will modify this texture
+	
+	glBindTexture(GL_TEXTURE_2D, textureID);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	unsigned char* data = stbi_load("Texture/characterTex.bmp", &imgWidth, &imgHeight, &imgChannels, 0);
+	if (data) {
+		cout << "이미지 로드 성공이염, 높이:" << imgHeight << "/ 길이: " << imgWidth << endl;
+
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, imgWidth, imgHeight, 0, GL_BGR, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else {
+		cout << "이미지 로드 에러염" << endl;
+	}
+	stbi_image_free(data);
+
+
+	glGenTextures(1, &textureID);
+	objs[0].SetTexID(textureID);
+	
 	
 	
 	// 카메라 선언
-	//Camera mainCam;
+	Camera mainCam(window, framebuf_width, framebuf_height);
 
 	//=============
 	//메 인 루 프 다
@@ -122,10 +152,10 @@ int main(void)
 		glClearColor(0.0f, 0.0f, 0.4f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		
+		mainCam.update();
 
 		for (unsigned int i = 0; i < objs.size(); ++i) {
-			objs[i].draw(View, Projection);
+			objs[i].draw(mainCam.GetView(), mainCam.GetProj());
 		}
 
 		glfwSwapBuffers(window);
