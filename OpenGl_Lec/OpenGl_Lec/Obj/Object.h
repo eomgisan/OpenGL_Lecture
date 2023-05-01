@@ -3,7 +3,10 @@ class Object
 {
 private:
 	GLuint VAO, VBO, NBO, TBO, IBO, CBO;
+
     GLuint textureID;
+    GLuint normalTexID;
+
 private:
     GLuint shader;
 
@@ -11,6 +14,9 @@ private:
     GLuint WorldMatrixID;
     GLuint ViewMatrixID;
     GLuint ProjectionMatrixID;
+
+    GLuint LightDirID;
+    GLuint CameraPosID;
 
     glm::mat4 World;
 
@@ -23,8 +29,13 @@ private:
 	vector<glm::vec2> texCoords;
     vector<glm::vec3> normals;
 
+    vector<glm::vec3> tangents;
+    vector<glm::vec3> bitangents;
+
     vector<unsigned short> idx;
 
+    glm::vec3 camPos;
+    glm::vec3 lightDir;
 
 
 private:
@@ -37,10 +48,13 @@ public:
 
 public:
     void SetWorld(const glm::mat4& _world) { World = _world; }
-
-
+    void SetCameraPos(const glm::vec3& _pos) { camPos = _pos; }
+    void SetLightDir(const glm::vec3& _dir) { lightDir = _dir; }
     void SetColorBuffer(const vector<GLfloat> &g_color_buffer_data);
-    void SetTexID(const GLuint& texId) { textureID = texId; }
+
+    void SetTexID(const GLuint& texId) { textureID =texId; }
+    void SetNormalTexID(const GLuint& texId) { normalTexID = texId; }
+
 
     GLuint loadBMP_custom(const char * imagepath);
 

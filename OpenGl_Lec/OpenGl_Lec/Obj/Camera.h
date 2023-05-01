@@ -35,6 +35,8 @@ public:
 
 	const glm::mat4 &GetView() { return View; }
 	const glm::mat4 &GetProj() { return Proj; }
+	const glm::vec3& GetPos() { return position; }
+	const glm::vec3 &GetDirection() { return direction; }
 	void update();
 };
 

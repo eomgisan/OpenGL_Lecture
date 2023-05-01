@@ -10,7 +10,7 @@ Camera::Camera(GLFWwindow* _window, int w, int h):
 	width(w),
 	heigth(h)
 {
-	position = glm::vec3(0, 0, 5);
+	position = glm::vec3(0, 10, 10);
 	// 수평각 : -Z 방향으로
 	horizontalAngle = 3.14f;
 	// 수직각 : 0, 수직을 바라봅니다. 

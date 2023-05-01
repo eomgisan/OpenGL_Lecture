@@ -4,11 +4,17 @@
 
 Object::Object(const char* vsPath, const char* fsPath, const char* objPath)
 {
+	textureID = 0;
+	normalTexID = 0;
+
 	CreateShaderProgramFromFiles("Shader/VS.vert", "Shader/FS.frag", shader);
 	
 	WorldMatrixID = glGetUniformLocation(shader, "World");
 	ViewMatrixID = glGetUniformLocation(shader, "View");
 	ProjectionMatrixID = glGetUniformLocation(shader, "Projection");
+
+	LightDirID = glGetUniformLocation(shader, "LightDir");
+	CameraPosID = glGetUniformLocation(shader, "CameraPos");
 	
 	loadOBJ(objPath);
 
@@ -68,6 +74,12 @@ bool Object::loadOBJ(const char* path) {
 		return false;
 	}
 
+	
+
+	vector<glm::vec2> tempTexCoord;
+	vector<glm::vec3> tempNormal;
+
+
 	while (1) {
 		char lineHeader[128];
 		int res = fscanf(file, "%s", lineHeader);
@@ -82,17 +94,17 @@ bool Object::loadOBJ(const char* path) {
 		else if (strcmp(lineHeader, "vt") == 0) {
 			glm::vec2 uv;
 			fscanf(file, "%f %f\n", &uv.x, &uv.y);
-			texCoords.push_back(uv);
+			tempTexCoord.push_back(uv);
 		}
 
 		else if (strcmp(lineHeader, "vn") == 0) {
 			glm::vec3 normal;
 			fscanf(file, "%f %f %f\n", &normal.x, &normal.y, &normal.z);
-			normals.push_back(normal);
+			tempNormal.push_back(normal);
 		}
 
 		else if (strcmp(lineHeader, "f") == 0) {
-			std::string vertex1, vertex2, vertex3;
+			
 			unsigned int vertexIndex[3], uvIndex[3], normalIndex[3];
 			int matches = fscanf(file, "%d/%d/%d %d/%d/%d %d/%d/%d\n", &vertexIndex[0], &uvIndex[0], &normalIndex[0], &vertexIndex[1], &uvIndex[1], &normalIndex[1], &vertexIndex[2], &uvIndex[2], &normalIndex[2]);
 			if (matches != 9) {
@@ -104,13 +116,13 @@ bool Object::loadOBJ(const char* path) {
 			idx.push_back(vertexIndex[1] - 1);
 			idx.push_back(vertexIndex[2] - 1);
 
-			idx.push_back(uvIndex[0] - 1);
-			idx.push_back(uvIndex[1] - 1);
-			idx.push_back(uvIndex[2] - 1);
+			texCoords.push_back(tempTexCoord[uvIndex[0] - 1]);
+			texCoords.push_back(tempTexCoord[uvIndex[1] - 1]);
+			texCoords.push_back(tempTexCoord[uvIndex[2] - 1]);
 
-			idx.push_back(normalIndex[0] - 1);
-			idx.push_back(normalIndex[1] - 1);
-			idx.push_back(normalIndex[2] - 1);
+			normals.push_back(tempNormal[normalIndex[0] - 1]);
+			normals.push_back(tempNormal[normalIndex[1] - 1]);
+			normals.push_back(tempNormal[normalIndex[2] - 1]);
 
 		}
 	}
@@ -124,16 +136,33 @@ bool Object::loadOBJ(const char* path) {
 
 void Object::draw(glm::mat4 View, glm::mat4 Proj) {
 	
+	
+
 	glUseProgram(shader);
 
 	glUniformMatrix4fv(WorldMatrixID, 1, GL_FALSE, glm::value_ptr(World));
 	glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, glm::value_ptr(View));
 	glUniformMatrix4fv(ProjectionMatrixID, 1, GL_FALSE, glm::value_ptr(Proj));
+	glUniform3fv(LightDirID, 1, glm::value_ptr(lightDir));
+	glUniform3fv(CameraPosID, 1, glm::value_ptr(camPos));
+
+	if(textureID != 0) {
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, textureID);
+		GLint location = glGetUniformLocation(shader, "AlbedoTex");
+		glUniform1i(location, 0);
+		
+	}
+
+	if (normalTexID != 0) {
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, normalTexID);
+		GLint location = glGetUniformLocation(shader, "NormalTex");
+		glUniform1i(location, 1);
+
+
+	}
 	
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, textureID);
-	GLint location = glGetUniformLocation(shader, "Tex");
-	glUniform1i(location, 0);
 	
 
 	glBindVertexArray(VAO);
@@ -141,5 +170,7 @@ void Object::draw(glm::mat4 View, glm::mat4 Proj) {
 	glDrawElements(GL_TRIANGLES, idx.size(), GL_UNSIGNED_SHORT, nullptr);
 	
 	glBindVertexArray(0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
 	glUseProgram(0);
 }

@@ -153,6 +153,7 @@
     <ClCompile Include="Func\LoadFunc.cpp" />
     <ClCompile Include="Obj\Object.cpp" />
     <ClCompile Include="Source\main.cpp" />
+    <ClCompile Include="Texture\Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Obj\Camera.h" />
@@ -163,6 +164,11 @@
     <ClInclude Include="Func\LoadFunc.h" />
     <ClInclude Include="Obj\Object.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Texture\Texture.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shader\FS.glsl" />
+    <None Include="Shader\VS.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
