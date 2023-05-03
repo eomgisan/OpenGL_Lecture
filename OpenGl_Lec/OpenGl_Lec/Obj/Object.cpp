@@ -7,7 +7,7 @@ Object::Object(const char* vsPath, const char* fsPath, const char* objPath)
 	textureID = 0;
 	normalTexID = 0;
 
-	CreateShaderProgramFromFiles("Shader/VS.vert", "Shader/FS.frag", shader);
+	CreateShaderProgramFromFiles(vsPath, fsPath, shader);
 	
 	WorldMatrixID = glGetUniformLocation(shader, "World");
 	ViewMatrixID = glGetUniformLocation(shader, "View");

@@ -30,7 +30,7 @@ void Texture::LoadTex(const char * path, string texName)
 	if (data) {
 		cout << "이미지 로드 성공이염, 높이:" << imgHeight << "/ 길이: " << imgWidth << endl;
 
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, imgWidth, imgHeight, 0, GL_BGR, GL_UNSIGNED_BYTE, data);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, imgWidth, imgHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 	else {
