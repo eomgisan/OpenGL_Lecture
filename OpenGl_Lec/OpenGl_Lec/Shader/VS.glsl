@@ -5,31 +5,28 @@ layout(location = 1) in vec2 uv;
 layout(location = 2) in vec3 normal;
 layout(location = 3) in vec3 col;
 
-out vec2 UV;
+out vec2 texCoord;
 out vec3 fragCol;
-out vec3 WorldPos;
-out vec3 a_normal;
+out vec3 fragPos;
+out vec3 fragNormal;
+out vec3 fragView;
 
 uniform mat4 World;
 uniform mat4 View;
 uniform mat4 Projection;
 
-
-
-out vec3 LightDirection_tangentspace;
-out vec3 EyeDirection_tangentspace;
+uniform vec3 CameraPos;
 
 
 void main(){
 
-  UV = uv;
+  texCoord = uv;
   fragCol = col;
 
-  WorldPos = vec3(World * vec4(pos,1));
+  fragPos = vec3(World * vec4(pos,1));
+  fragNormal = normalize(transpose(inverse(mat3(World)))*normalize(normal));
+  fragView = vec3(CameraPos - fragPos);
   
-  
-  a_normal = normalize(transpose(inverse(mat3(World)))*normal);
- 
   gl_Position =  Projection * View * World * vec4(pos,1);
   
 }

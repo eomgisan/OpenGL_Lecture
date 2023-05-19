@@ -3,8 +3,8 @@
 #include "pch.h"
 
 #include "Func/LoadFunc.h"
-#include "Obj/object.h"
-#include "Obj/Camera.h"
+#include "Object/object.h"
+#include "Camera/Camera.h"
 #include "Texture/texture.h"
 
 
@@ -51,6 +51,7 @@ int main(void)
 	texManager->LoadTex("Texture/tree_default_Albedo.png", "Tree_Col");
 	texManager->LoadTex("Texture/tree_default_Normal.png", "Tree_Nor");
 	texManager->LoadTex("Texture/tree_default_AO.png", "Tree_Height");
+	texManager->LoadTex("Texture/tex.bmp", "Gisan");
 
 	//==========
 	// 씬 만들기
@@ -58,9 +59,9 @@ int main(void)
 
 	vector<Object> objs;
 
-	objs.push_back(Object("Shader/VS.glsl", "Shader/FS.glsl", "Model/tree.obj"));
+	objs.push_back(Object("Shader/VS.glsl", "Shader/NormalMappingFragShader.glsl", "Model/tree.obj"));
 
-	glm::mat4 World = glm::scale(glm::mat4(1.0f),glm::vec3(0.05));
+	glm::mat4 World = glm::scale(glm::mat4(1.0f),glm::vec3(0.05f));
 
 
 
@@ -69,7 +70,10 @@ int main(void)
 	objs[0].SetTexID(texManager->GetTex("Tree_Col"));
 	objs[0].SetNormalTexID(texManager->GetTex("Tree_Nor"));
 
+	objs.push_back(Object("Shader/VS.glsl", "Shader/FragShader.glsl", "Model/plane.obj"));
 
+	objs[1].SetWorld(glm::mat4(1.0f));
+	//objs[1].SetTexID(texManager->GetTex("Gisan"));
 
 	
 	// 카메라 선언
@@ -91,8 +95,24 @@ int main(void)
 
 		mainCam.update();
 		
+		unsigned int ShadowMapFBO;
+		glGenFramebuffers(1, &ShadowMapFBO);
+
+		const unsigned int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
+
+		unsigned int ShadowMap;
+		glGenTextures(1, &ShadowMap);
+		glBindTexture(GL_TEXTURE_2D, ShadowMap);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
+			SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+		glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, ShadowMap, 0);
+
 		for (unsigned int i = 0; i < objs.size(); ++i) {
-			objs[i].SetLightDir(mainCam.GetDirection());
 			objs[i].SetCameraPos(mainCam.GetPos());
 			objs[i].draw(mainCam.GetView(), mainCam.GetProj());
 		}

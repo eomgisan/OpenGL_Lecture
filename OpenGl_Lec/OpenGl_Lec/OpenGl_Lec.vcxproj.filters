@@ -21,13 +21,16 @@
     <ClCompile Include="Func\LoadFunc.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Obj\Object.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Obj\Camera.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="Texture\Texture.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\Light\light.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\Object.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera\Camera.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
@@ -50,18 +53,22 @@
     <ClInclude Include="Func\LoadFunc.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Obj\Object.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Obj\Camera.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="Texture\Texture.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\Light\light.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\Object.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera\Camera.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shader\FS.glsl" />
     <None Include="Shader\VS.glsl" />
+    <None Include="Shader\FragShader.glsl" />
+    <None Include="Shader\NormalMappingFragShader.glsl" />
   </ItemGroup>
 </Project>

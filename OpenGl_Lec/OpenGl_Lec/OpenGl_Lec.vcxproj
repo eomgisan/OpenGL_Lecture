@@ -149,25 +149,28 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Obj\Camera.cpp" />
+    <ClCompile Include="Object\Light\light.cpp" />
+    <ClCompile Include="Camera\Camera.cpp" />
     <ClCompile Include="Func\LoadFunc.cpp" />
-    <ClCompile Include="Obj\Object.cpp" />
+    <ClCompile Include="Object\Object.cpp" />
     <ClCompile Include="Source\main.cpp" />
     <ClCompile Include="Texture\Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Obj\Camera.h" />
+    <ClInclude Include="Object\Light\light.h" />
+    <ClInclude Include="Camera\Camera.h" />
     <ClInclude Include="Dependencies\GLEW\include\GL\eglew.h" />
     <ClInclude Include="Dependencies\GLEW\include\GL\glew.h" />
     <ClInclude Include="Dependencies\GLEW\include\GL\glxew.h" />
     <ClInclude Include="Dependencies\GLEW\include\GL\wglew.h" />
     <ClInclude Include="Func\LoadFunc.h" />
-    <ClInclude Include="Obj\Object.h" />
+    <ClInclude Include="Object\Object.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Texture\Texture.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shader\FS.glsl" />
+    <None Include="Shader\FragShader.glsl" />
+    <None Include="Shader\NormalMappingFragShader.glsl" />
     <None Include="Shader\VS.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
